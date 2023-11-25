@@ -35,16 +35,17 @@ int main() {
    
   int cnt=0;
   int lanternfish=-1;
-  char ch;
 
   array<long long,9> arr = { 0,0,0,0,0,0,0,0,0 };
 
   while ( is >> lanternfish )
   {
-    is >> ch;
     cout << lanternfish << endl;
     arr[lanternfish]++;
     ++cnt;
+
+    if ( is.peek() == ',' )
+      is.ignore();
   }
   cout << "cnt: " << cnt << endl;
 
