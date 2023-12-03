@@ -128,6 +128,7 @@ int main() {
       {
          if ( numbers.find( std::make_pair(i,j) ) != numbers.end() )
          {
+           // this goes wrong if same number connects twice X*X
            ts.insert( numbers[std::make_pair(i,j)] );
          }
       }
