@@ -23,7 +23,7 @@ string handleWf( bool & controlled, vector<tuple<char,char,int,string>> wf, tupl
   aMap['x'] = 0;
   aMap['m'] = 0;
   aMap['a'] = 0;
-  aMap['a'] = 0;
+  aMap['s'] = 0;
   tie( aMap['x'], aMap['m'], aMap['a'], aMap['s']) = mp;
 
   string ret;
