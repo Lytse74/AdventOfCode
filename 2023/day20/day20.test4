@@ -1,0 +1,6 @@
+broadcaster -> a,b
+in1 -> a
+in2 -> b
+&a -> c
+&b -> c
+&c -> out
