@@ -79,36 +79,94 @@ int main()
         if (j != 1)
         {
           nodes_u.insert(make_pair(make_pair('L', 2), make_pair(i, j)));
-          edge_cost[make_pair(make_tuple('L', 1, i, j - 1), make_tuple('L', 2, i, j))] = grid[i][j];
           path_cost[make_pair(make_pair('L', 2), make_pair(i, j))] = -1;
+          edge_cost[make_pair(make_tuple('L', 1, i, j - 1), make_tuple('L', 2, i, j))] = grid[i][j];
           if (j != 2)
           {
             nodes_u.insert(make_pair(make_pair('L', 3), make_pair(i, j)));
             path_cost[make_pair(make_pair('L', 3), make_pair(i, j))] = -1;
             edge_cost[make_pair(make_tuple('L', 2, i, j - 1), make_tuple('L', 3, i, j))] = grid[i][j];
+            if (j != 3)
+            {
+              nodes_u.insert(make_pair(make_pair('L', 4), make_pair(i, j)));
+              path_cost[make_pair(make_pair('L', 4), make_pair(i, j))] = -1;
+              edge_cost[make_pair(make_tuple('L', 3, i, j - 1), make_tuple('L', 4, i, j))] = grid[i][j];
+              if (j != 4)
+              {
+                nodes_u.insert(make_pair(make_pair('L', 5), make_pair(i, j)));
+                path_cost[make_pair(make_pair('L', 5), make_pair(i, j))] = -1;
+                edge_cost[make_pair(make_tuple('L', 4, i, j - 1), make_tuple('L', 5, i, j))] = grid[i][j];
+                if (j != 5)
+                {
+                  nodes_u.insert(make_pair(make_pair('L', 6), make_pair(i, j)));
+                  path_cost[make_pair(make_pair('L', 6), make_pair(i, j))] = -1;
+                  edge_cost[make_pair(make_tuple('L', 5, i, j - 1), make_tuple('L', 6, i, j))] = grid[i][j];
+                  if (j != 6)
+                  {
+                    nodes_u.insert(make_pair(make_pair('L', 7), make_pair(i, j)));
+                    path_cost[make_pair(make_pair('L', 7), make_pair(i, j))] = -1;
+                    edge_cost[make_pair(make_tuple('L', 6, i, j - 1), make_tuple('L', 7, i, j))] = grid[i][j];
+                    if (j != 7)
+                    {
+                      nodes_u.insert(make_pair(make_pair('L', 8), make_pair(i, j)));
+                      path_cost[make_pair(make_pair('L', 8), make_pair(i, j))] = -1;
+                      edge_cost[make_pair(make_tuple('L', 7, i, j - 1), make_tuple('L', 8, i, j))] = grid[i][j];
+                      if (j != 8)
+                      {
+                        nodes_u.insert(make_pair(make_pair('L', 9), make_pair(i, j)));
+                        path_cost[make_pair(make_pair('L', 9), make_pair(i, j))] = -1;
+                        edge_cost[make_pair(make_tuple('L', 8, i, j - 1), make_tuple('L', 9, i, j))] = grid[i][j];
+                        if (j != 9)
+                        {
+                          nodes_u.insert(make_pair(make_pair('L', 10), make_pair(i, j)));
+                          path_cost[make_pair(make_pair('L', 10), make_pair(i, j))] = -1;
+                          edge_cost[make_pair(make_tuple('L', 9, i, j - 1), make_tuple('L', 10, i, j))] = grid[i][j];
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
-        if (i != 0)
+        if (i > 3)
         {
-          edge_cost[make_pair(make_tuple('D', 1, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
-          if (i != 1)
+          edge_cost[make_pair(make_tuple('D', 4, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+          if (i > 4 )
           {
-            edge_cost[make_pair(make_tuple('D', 2, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
-            if (i != 2)
+            edge_cost[make_pair(make_tuple('D', 5, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+            if (i > 5 )
             {
-              edge_cost[make_pair(make_tuple('D', 3, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+              edge_cost[make_pair(make_tuple('D', 6, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+              if (i > 6)
+              {
+                edge_cost[make_pair(make_tuple('D', 7, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+                if (i > 7 )
+                {
+                  edge_cost[make_pair(make_tuple('D', 8, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+                  if (i > 8 )
+                  {
+                    edge_cost[make_pair(make_tuple('D', 9, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+                    if (i > 9 )
+                    {
+                      edge_cost[make_pair(make_tuple('D', 10, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+                    }
+                  }
+                }
+              }
             }
           }
         }
         if (i != grid.size() - 1)
         {
-          edge_cost[make_pair(make_tuple('U', 1, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+          edge_cost[make_pair(make_tuple('U', 4, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
           if (i != grid.size() - 2)
           {
-            edge_cost[make_pair(make_tuple('U', 2, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+            edge_cost[make_pair(make_tuple('U', 5, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
             if (i != grid.size() - 3)
             {
-              edge_cost[make_pair(make_tuple('U', 3, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+              edge_cost[make_pair(make_tuple('U', 6, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
             }
           }
         }
