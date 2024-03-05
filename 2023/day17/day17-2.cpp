@@ -15,6 +15,7 @@ using std::get;
 using std::make_pair;
 using std::make_tuple;
 using std::map;
+using std::multimap;
 using std::pair;
 using std::set;
 using std::string;
@@ -55,7 +56,12 @@ int main()
   // Create graph
   // nodes
   // edges -> cost
-  map<pair<tuple<char, short, int, int>, tuple<char, short, int, int>>, int> edge_cost;
+  multimap< 
+      tuple<char, short, int, int>
+    , pair<int,tuple<char, short, int, int>> > edge_cost;
+  multimap< 
+      tuple<char, short, int, int>
+    , pair<int,tuple<char, short, int, int>> >::iterator edge_cost_it;
   // nodes -> costs
   map<pair<pair<char, short>, pair<int, int>>, int> path_cost;
   set<pair<pair<char, short>, pair<int, int>>> nodes_u;
@@ -69,31 +75,29 @@ int main()
       {
         nodes_u.insert(make_pair(make_pair('-', 0), make_pair(i, j)));
         path_cost[make_pair(make_pair('-', 0), make_pair(i, j))] = 0;
-        edge_cost[make_pair(make_tuple('-', 0, i, j), make_tuple('L', 1, i, j + 1))] = grid[i][j + 1];
-        edge_cost[make_pair(make_tuple('-', 0, i, j), make_tuple('D', 1, i + 1, j))] = grid[i + 1][j];
+        edge_cost.insert(make_pair( make_tuple('-', 0, i, j), make_pair(grid[i][j+1], make_tuple('L', 1, i, j + 1)) ));
+        edge_cost.insert(make_pair( make_tuple('-', 0, i, j), make_pair(grid[i+1][j], make_tuple('D', 1, i + 1, j)) ));
       }
       if (j > 0)
       {
         nodes_u.insert(make_pair(make_pair('L', 1), make_pair(i, j)));
-        path_cost[make_pair(make_pair('L', 1), make_pair(i, j))] = -1;
         for (int t = 1; t<10; t++)
         {
           if (j > t)
           {
             nodes_u.insert(make_pair(make_pair('L', t+1), make_pair(i, j)));
-            edge_cost[make_pair(make_tuple('L', t, i, j - 1), make_tuple('L', t+1, i, j))] = grid[i][j];
-            path_cost[make_pair(make_pair('L', t+1), make_pair(i, j))] = -1;
+            edge_cost.insert(make_pair( make_tuple('L', t, i, j - 1), make_pair( grid[i][j], make_tuple('L', t+1, i, j)) ));
           }
         }
         for (int t = 3; t<10; t++)
         {
           if (i > t)
-            edge_cost[make_pair(make_tuple('D', t+1, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+            edge_cost.insert(make_pair(make_tuple('D', t+1, i, j - 1), make_pair( grid[i][j], make_tuple('L', 1, i, j)) ));
         }
         for (int t = 3; t<10; t++)
         {
           if (i < grid.size() - (t+1) )
-            edge_cost[make_pair(make_tuple('U', t+1, i, j - 1), make_tuple('L', 1, i, j))] = grid[i][j];
+            edge_cost.insert(make_pair(make_tuple('U', t+1, i, j - 1), make_pair( grid[i][j], make_tuple('L', 1, i, j)) ));
         }
       }
       if (j != grid[i].size() - 1)
@@ -101,50 +105,46 @@ int main()
         if (i != 0 || j != 0)
         {
           nodes_u.insert(make_pair(make_pair('R', 1), make_pair(i, j)));
-          path_cost[make_pair(make_pair('R', 1), make_pair(i, j))] = -1;
           for (int t = 1; t<10; t++)
           {
             if (j < grid[i].size() - (t+1) )
             {
               nodes_u.insert(make_pair(make_pair('R', t+1), make_pair(i, j)));
-              path_cost[make_pair(make_pair('R', t+1), make_pair(i, j))] = -1;
-              edge_cost[make_pair(make_tuple('R', t, i, j + 1), make_tuple('R', t+1, i, j))] = grid[i][j];
+              edge_cost.insert(make_pair(make_tuple('R', t, i, j + 1), make_pair( grid[i][j], make_tuple('R', t+1, i, j)) ));
             }
           }
           for (int t = 3; t<10; t++)
           {
             if (i > t)
-              edge_cost[make_pair(make_tuple('D', t+1, i, j + 1), make_tuple('R', 1, i, j))] = grid[i][j];
+              edge_cost.insert(make_pair(make_tuple('D', t+1, i, j + 1), make_pair( grid[i][j], make_tuple('R', 1, i, j)) ));
           }
           for (int t = 3; t<10; t++)
           {
             if (i < grid.size() - (t+1) )
-              edge_cost[make_pair(make_tuple('U', t+1, i, j + 1), make_tuple('R', 1, i, j))] = grid[i][j];
+              edge_cost.insert(make_pair(make_tuple('U', t+1, i, j + 1), make_pair( grid[i][j], make_tuple('R', 1, i, j)) ));
           }
         }
       }
       if (i != 0)
       {
         nodes_u.insert(make_pair(make_pair('D', 1), make_pair(i, j)));
-        path_cost[make_pair(make_pair('D', 1), make_pair(i, j))] = -1;
         for (int t = 1; t<10; t++)
         {
           if (i > t)
           {
-            edge_cost[make_pair(make_tuple('D', t, i - 1, j), make_tuple('D', t+1, i, j))] = grid[i][j];
+            edge_cost.insert(make_pair(make_tuple('D', t, i - 1, j), make_pair( grid[i][j], make_tuple('D', t+1, i, j)) ));
             nodes_u.insert(make_pair(make_pair('D', t+1), make_pair(i, j)));
-            path_cost[make_pair(make_pair('D', t+1), make_pair(i, j))] = -1;
           }
         }
         for (int t = 3; t<10; t++)
         {
           if (j > t)
-            edge_cost[make_pair(make_tuple('L', t+1, i - 1, j), make_tuple('D', 1, i, j))] = grid[i][j];
+            edge_cost.insert(make_pair(make_tuple('L', t+1, i - 1, j), make_pair( grid[i][j], make_tuple('D', 1, i, j)) ));
         }
         for (int t = 3; t<10; t++)
         {
           if (j < grid.size() - (t+1) )
-            edge_cost[make_pair(make_tuple('R', t+1, i - 1, j), make_tuple('D', 1, i, j))] = grid[i][j];
+            edge_cost.insert(make_pair(make_tuple('R', t+1, i - 1, j), make_pair( grid[i][j], make_tuple('D', 1, i, j)) ));
         }
       }
       if (i != grid.size() - 1)
@@ -152,25 +152,23 @@ int main()
         if (i != 0 || j != 0)
         {
           nodes_u.insert(make_pair(make_pair('U', 1), make_pair(i, j)));
-          path_cost[make_pair(make_pair('U', 1), make_pair(i, j))] = -1;
           for (int t = 1; t<10; t++)
           {
             if (i < grid[i].size() - (t+1) )
             {
               nodes_u.insert(make_pair(make_pair('U', t+1), make_pair(i, j)));
-              path_cost[make_pair(make_pair('U', t+1), make_pair(i, j))] = -1;
-              edge_cost[make_pair(make_tuple('U', t, i + 1, j), make_tuple('U', t+1, i, j))] = grid[i][j];
+              edge_cost.insert(make_pair(make_tuple('U', t, i + 1, j), make_pair( grid[i][j], make_tuple('U', t+1, i, j)) ));
             }
           }
           for (int t = 3; t<10; t++)
           {
             if (j > t)
-              edge_cost[make_pair(make_tuple('L', t+1, i + 1, j), make_tuple('U', 1, i, j))] = grid[i][j];
+              edge_cost.insert(make_pair(make_tuple('L', t+1, i + 1, j), make_pair( grid[i][j], make_tuple('U', 1, i, j)) ));
           }
           for (int t = 3; t<10; t++)
           {
             if (j < grid.size() - (t+1) )
-              edge_cost[make_pair(make_tuple('R', t+1, i + 1, j), make_tuple('U', 1, i, j))] = grid[i][j];
+              edge_cost.insert(make_pair(make_tuple('R', t+1, i + 1, j), make_pair( grid[i][j], make_tuple('U', 1, i, j)) ));
           }
         }
       }
@@ -212,38 +210,30 @@ int main()
     cout << minKey.first.first << "|" << minKey.first.second << " (" << minKey.second.first << "," << minKey.second.second << ") visited C:"
       << path_cost[minKey] << endl;
 
-    // updatedestinations
-    for (auto const &[key, val] : edge_cost)
-    {
-      if (get<0>(key.first) == minKey.first.first && get<1>(key.first) == minKey.first.second && get<2>(key.first) == minKey.second.first && get<3>(key.first) == minKey.second.second)
-      {
-        pair<pair<char, short>, pair<int, int>> tmp;
-        pair<pair<char, short>, pair<int, int>> tmp2;
-        tmp = make_pair(make_pair(get<0>(key.second), get<1>(key.second)), make_pair(get<2>(key.second), get<3>(key.second)));
-        tmp2 = make_pair(make_pair(get<0>(key.first), get<1>(key.first)), make_pair(get<2>(key.first), get<3>(key.first)));
-        if (path_cost[tmp] >= path_cost[tmp2])
-          continue;
-/*
-        cout << minKey.first.first << "|" << minKey.first.second << "(" << minKey.second.first << "," << minKey.second.second << ") "
-             << "spath"
-             << " C:" << path_cost[tmp2] << " : ";
-        cout << tmp.first.first << "|" << tmp.first.second << "(" << tmp.second.first << "," << tmp.second.second << ")"
-             << " C:" << val << endl;
-*/
-        loc = minKey;
 
-        // update costs depends on prev moves
-        if (path_cost[tmp] < 0)
-          path_cost[tmp] = val + path_cost[tmp2];
-        else
-        {
-          if (path_cost[tmp2] + val < path_cost[tmp])
-          {
-            path_cost[tmp] = val + path_cost[tmp2];
-          }
-        }
+    // updatedestinations
+    auto ec_it = edge_cost.equal_range( make_tuple( minKey.first.first, minKey.first.second, minKey.second.first, minKey.second.second ) );    
+    for ( edge_cost_it = ec_it.first ; edge_cost_it != ec_it.second; edge_cost_it++ )
+    {
+      pair<pair<char, short>, pair<int, int>> tmp;
+      tmp = make_pair(make_pair(get<0>(edge_cost_it->second.second), get<1>(edge_cost_it->second.second)), make_pair(get<2>(edge_cost_it->second.second), get<3>(edge_cost_it->second.second)));
+      
+      loc = minKey;
+
+      // update costs depends on prev moves
+      if (path_cost[tmp] > edge_cost_it->second.first + path_cost[minKey]
+        || path_cost[tmp] == 0 )
+      {
+          path_cost[tmp] = edge_cost_it->second.first + path_cost[minKey];
       }
+      
+      cout << tmp.first.first << "|" << tmp.first.second << "(" << tmp.second.first << "," << tmp.second.second << ")"
+            << " C:" << path_cost[tmp] << endl;
     }
+    if ( loc.second == fin )
+      break;
+    else
+      path_cost.erase( minKey );
   }
 
   cout << "answer = " << path_cost[loc] << endl;

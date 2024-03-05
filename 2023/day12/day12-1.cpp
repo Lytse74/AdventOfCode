@@ -146,7 +146,8 @@ int main() {
     while ((pos = tmp.rfind("?")) != std::string::npos)
       tmp.replace(pos, 1, bits, pos2--, 1 );
     
-    cout << getGroupConf(tmp) << endl;
+    //cout << getGroupConf(tmp) << endl;
+    getGroupConf(tmp);
     if ( getGroupConf(tmp) == cgrp )
       cnt++;
     
@@ -162,14 +163,15 @@ int main() {
       while ((pos = tmp.rfind("?")) != std::string::npos)
         tmp.replace(pos, 1, bits, pos2--, 1 );
       
-      cout << getGroupConf(tmp) << endl;
+      //cout << getGroupConf(tmp) << endl;
+      getGroupConf(tmp);
       if ( getGroupConf(tmp) == cgrp )
         cnt++;
       
       x = nx;
       nx = getNext(x);
     }
-    cout << endl;
+    cout << cnt << endl;
   }
 
   cout << "count = " << cnt << endl;
