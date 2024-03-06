@@ -79,15 +79,20 @@ long long recur( std::string cond, std::vector<int> igrp, std::map<std::tuple<in
 {
   std::tuple<int,int,int> key = std::make_tuple( pos, bpos, dpos );
   long long answer = 0;
-
+  
+  // if input was calculated before return it
   if ( rep.find(key) != rep.end() )
     return rep[key];
 
+  // the end of the conditional string was reached
   if ( pos == cond.length() )
+    // all blocks were matched
     if ( bpos == igrp.size() && dpos==0 )
       return 1;
+    // the last block was matched  
     else if ( bpos == igrp.size()-1 && igrp[bpos]==dpos )
       return 1;
+    // not all the blocks were matched
     else
       return 0;
 
@@ -98,7 +103,7 @@ long long recur( std::string cond, std::vector<int> igrp, std::map<std::tuple<in
         answer += recur( cond, igrp, rep, pos+1, bpos, 0 );
       else if ( c == '.' && dpos > 0 && bpos < igrp.size() && igrp[bpos] == dpos )
         answer += recur( cond, igrp, rep, pos+1, bpos+1, 0 );
-      else if (  c== '#' )
+      else if (  c == '#' )
         answer += recur( cond, igrp, rep, pos+1, bpos, dpos+1 );
   }
   
