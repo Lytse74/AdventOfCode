@@ -96,7 +96,7 @@ int main() {
   // open the file
   std::ifstream is("day12.input");
   std::string str;
-  int cnt {};
+  int cnt { 0 };
   
   while ( getline( is, str ) )
   {
@@ -105,6 +105,7 @@ int main() {
     std::string cond;
     std::string cgrp;
     std::vector<std::string> split;
+    int cnti { 0 };
 
     while ( getline( iss, sstr, ' ' ) )
     {
@@ -149,7 +150,7 @@ int main() {
     //cout << getGroupConf(tmp) << endl;
     getGroupConf(tmp);
     if ( getGroupConf(tmp) == cgrp )
-      cnt++;
+      cnti++;
     
     long long nx = getNext(x);
     while (  nx != x && nx < ( 0x1 << questSrc) )
@@ -166,12 +167,13 @@ int main() {
       //cout << getGroupConf(tmp) << endl;
       getGroupConf(tmp);
       if ( getGroupConf(tmp) == cgrp )
-        cnt++;
+        cnti++;
       
       x = nx;
       nx = getNext(x);
     }
-    cout << cnt << endl;
+    cout << cnti << endl;
+    cnt += cnti;
   }
 
   cout << "count = " << cnt << endl;

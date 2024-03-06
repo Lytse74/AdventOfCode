@@ -12,26 +12,6 @@
 using std::cout;
 using std::endl;
 
-
-// https://graphics.stanford.edu/~seander/shacks.html
-long long getNext( long long v )
-{
-  //unsigned int v; // current permutation of bits 
-  long long w; // next permutation of bits
-
-  long long t = v | (v - 1); // t gets v's least significant 0 bits set to 1
-  // Next set to 1 the most significant bit to change, 
-  // set to 0 the least significant ones, and add the necessary 1 bits.
-  w = (t + 1) | (((~t & -~t) - 1) >> (__builtin_ctz(v) + 1));  
-  return w;
-}
-
-// https://stackoverflow.com/questions/45352352/most-efficient-way-to-set-n-consecutive-bits-to-1
-long long bitmask ( int n ) {
-  long long x = (n ^ 64) >> 6;
-  return (x << (n & 63)) - 1;
-}
-
 int getDashCount( std::string s1 )
 {
   std::istringstream is(s1);
@@ -47,62 +27,9 @@ int getDashCount( std::string s1 )
   return ret;
 }
 
-int getMinLength( std::vector<int> v )
-{
-  int ret {};
- 
-  for ( auto& n : v )
-    ret += n + 1;
-  ret -= 1;
-
-  return ret;
-}
-
 int getQuestionCount( std::string s1 )
 {
   return ( std::count(s1.begin(), s1.end(), '?') );
-}
-
-std::string getGroupConf2( std::string s1 )
-{
-  std::istringstream is(s1);
-  std::string ret;
-
-  char cch;
-  char pch;
-  int dcnt {};
-  bool f = true;
-
-  if ( is.get( pch ) && ( pch == '#' || pch == '?' ) )
-    dcnt++;
-  while ( is.get( cch ) )
-  {
-    if ( ( pch == '#' || pch == '?' ) && ( cch == '#' || cch == '?' ) )
-    {
-      dcnt++;
-    }
-    else if ( ( pch == '#' || pch == '?' ) )
-    {
-      if ( !f ) ret += ',';
-      f = false;
-      ret += std::to_string(dcnt);
-      dcnt = 0;
-    }
-    else if ( ( cch == '#' || cch == '?' ) )
-    {
-      dcnt++;
-    }
-    pch = cch;
-  }
-  if ( dcnt != 0 )
-  {
-    if ( !f ) ret += ',';
-    f = false;
-    ret += std::to_string(dcnt);
-    dcnt = 0;
-  }
-
-  return ret;
 }
 
 std::string getGroupConf( std::string s1 )
@@ -147,117 +74,45 @@ std::string getGroupConf( std::string s1 )
   return ret;
 }
 
-void placeDots( std::string & s1, int n )
+
+long long recur( std::string cond, std::vector<int> igrp, std::map<std::tuple<int,int,int>,long long> & rep, int pos, int bpos, int dpos )
 {
-  char cch;
-  char pch;
-  int dcnt {};
+  std::tuple<int,int,int> key = std::make_tuple( pos, bpos, dpos );
+  long long answer = 0;
 
-  for ( auto ch = s1.begin(); ch < s1.end(); ch++ )
+  if ( rep.find(key) != rep.end() )
+    return rep[key];
+
+  if ( pos == cond.length() )
+    if ( bpos == igrp.size() && dpos==0 )
+      return 1;
+    else if ( bpos == igrp.size()-1 && igrp[bpos]==dpos )
+      return 1;
+    else
+      return 0;
+
+  for ( auto c: {'.', '#'} )
   {
-    cch = *ch;
-    if ( *ch == '#')
-    {
-      dcnt++;
-      pch = *ch;
-    }
-    else if ( pch == '#' )
-    {
-      if ( dcnt >= n )
-        *ch = '.';
-      dcnt = 0;
-    }
+    if ( cond[pos] == c || cond[pos]=='?' )
+      if ( c == '.' && dpos == 0 ) 
+        answer += recur( cond, igrp, rep, pos+1, bpos, 0 );
+      else if ( c == '.' && dpos > 0 && bpos < igrp.size() && igrp[bpos] == dpos )
+        answer += recur( cond, igrp, rep, pos+1, bpos+1, 0 );
+      else if (  c== '#' )
+        answer += recur( cond, igrp, rep, pos+1, bpos, dpos+1 );
   }
   
-  for ( auto ch = s1.rbegin(); ch < s1.rend(); ch++ )
-  {
-    cch = *ch;
-    if ( *ch == '#')
-    {
-      dcnt++;
-      pch = *ch;
-    }
-    else if ( pch == '#' )
-    {
-      if ( dcnt >= n )
-        *ch = '.';
-      dcnt = 0;
-    }
-  }
+  rep[key] = answer;
 
-  return;
+  return answer;
 }
-
-int recur( std::string s1, std::vector<int> v, std::map<int,std::string> mreg )
-{
-  std::size_t mlen = getMinLength( v ) +2;
-  std::size_t tgtlen = s1.length();
-  std::string s2;
-  int result = 0;
-
-  if (  mlen > tgtlen )
-    return 0;
-
-  std::size_t pdot = s1.find_first_of(".",1);
-  std::size_t phash = s1.find_first_of("#");
-  
-  std::size_t wiggle1 = tgtlen - mlen;
-  std::size_t wiggle2 = pdot;
-  std::size_t wiggle3 = phash-1;
-
-  std::size_t thewiggle = (  wiggle2 < wiggle3 ) ? ( ( wiggle2 < wiggle1 ) ? wiggle2 : wiggle1 ) : ( ( wiggle3 < wiggle1 ) ? wiggle3 : wiggle1 );
-
-  std::vector<int>::iterator it;
-  it = v.begin();
-
-  if ( it == v.end() )
-    return 1;
-
-  auto const regex = std::regex(mreg[*it]);
-  auto sres = std::smatch{};
-  auto pit = *it;
-  it = v.erase(it);
-
-  while ( thewiggle +1 > 0 )
-  {
-  bool const found = std::regex_search( s1, sres, regex);
-  cout << s1 << " " << mreg[1] << endl;
-  cout << "found = " << sres.size() << " " << found << " position = " << sres.position() << " length = " << sres.length() << endl;
-  
-  s2 = "." + s1.substr( sres.position()+sres.length() );
-  cout << s2 << " " << mreg[pit] << endl;
-  if ( !v.empty() )
-  {
-    cout << "rb:" << result << endl; 
-    result += recur( s2, v, mreg ) ;
-    cout << "ra:" << result << endl; 
-  }
-  else if ( found ) 
-  {
-    result += 1;
-    cout << "rf:" << result << endl; 
-  }
-
-  thewiggle  -= 1;
-  if ( found )
-    s1 = s1.substr(sres.position()+1);
-  }  
-  return result;
-}
-
 
 int main() {
   // open the file
-  std::ifstream is("day12.test");
+  std::ifstream is("day12.input");
   std::string str;
   long long cnt {};
-  std::map<int,std::string> mreg;
   
-  for ( auto i=1; i<=20; i++ )
-  {
-    mreg[i] = "[.\?][#\?]{" + std::to_string( i ) + "}[.\?]";
-  }
-
   while ( getline( is, str ) )
   {
     std::istringstream iss(str);
@@ -265,16 +120,15 @@ int main() {
     std::string cond;
     std::string cgrp;
     std::vector<std::string> split;
+    long long cnti { 0 };
 
     while ( getline( iss, sstr, ' ' ) )
     {
       split.push_back( sstr );
     }
 
-    cond = split[0];
-    //cond = split[0] + "?" + split[0] + "?" + split[0] + "?" + split[0] + "?" + split[0];
-    cgrp = split[1];
-    //cgrp = split[1] + "," + split[1] + "," + split[1] + "," + split[1] + "," + split[1];
+    cond = split[0] + "?" + split[0] + "?" + split[0] + "?" + split[0] + "?" + split[0];
+    cgrp = split[1] + "," + split[1] + "," + split[1] + "," + split[1] + "," + split[1];
 
     int dashSrc = getDashCount( getGroupConf( cond ));
     int dashTgt = getDashCount( cgrp );
@@ -285,24 +139,21 @@ int main() {
     
     assert( dashTgt >= dashSrc );
 
-    // filter out unwanted questions
-    std::vector<int> v,w,u;
-    std::vector<int>::iterator it_v;
-    std::string tcgrp = getGroupConf2( cond );
-    cout << tcgrp << endl;
-
-    std::istringstream is2(cgrp);
-    while ( getline ( is2, sstr, ',' ) )
+    std::istringstream viss(cgrp);
+    std::vector<int> igrp ;
+    while ( getline( viss, sstr, ',') )
     {
-      v.push_back( std::stoi( sstr ) );
+      igrp.push_back( stoi(sstr) );
     }
-    
-    // let cond always start with a dot
-    cond = "." + cond + ".";
-    long long pipo = recur( cond, v, mreg );
 
-    cout << "recur = " << pipo;
-    cout << endl;
+    std::map<std::tuple<int,int,int>,long long> rep;
+
+    cnti = recur( cond, igrp, rep, 0, 0, 0 );
+
+    cnt += cnti;
+
+    cout << cnti << "|" << rep.size() << endl;
+
   }
 
   cout << "count = " << cnt << endl;
