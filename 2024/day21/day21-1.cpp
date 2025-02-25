@@ -309,7 +309,7 @@ int main()
             {
                 std::size_t npos10 = dir5.find("A",pos10);
                 string dir10 = dir5.substr(pos10,npos10-pos10+1);
-                cout << npos10 << "/" << dir5.length() << ":" << npos5 << "/" << keys.length() << endl;
+                //cout << npos10 << "/" << dir5.length() << ":" << npos5 << "/" << keys.length() << endl;
                 if ( lookup.find(dir10) != lookup.end() )
                 {
                     dir10 = lookup[dir10].second;       
