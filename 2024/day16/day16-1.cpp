@@ -45,18 +45,16 @@ void tracks ( enum Dir dir, bool start, vector<vector<char>> & m, vector<vector<
     bool stepped = false;
 
     if ( s[e.first][e.second] == s[e.first-1][e.second]+1
-//        || (s[e.first][e.second] == s[e.first-1][e.second]-999)&&!start
-//         &&((s[e.first][e.second] == s[e.first+1][e.second]-1001)
-//            ||(s[e.first][e.second] == s[e.first][e.second-1]-1001)
-//            ||(s[e.first][e.second] == s[e.first][e.second+1]-1001) )
+        || (s[e.first][e.second] == s[e.first-1][e.second]-999)&&!start
+         &&((s[e.first][e.second] == s[e.first+1][e.second]-1001)&&dir==N)
         || s[e.first][e.second] == s[e.first-1][e.second]+1001 )
     {
         tracks( N, false, m, s, make_pair( e.first-1, e.second ) );
         stepped = true;
     }
     if ( s[e.first][e.second] == s[e.first+1][e.second]+1
-//        ||  (s[e.first][e.second] == s[e.first+1][e.second]-999)&&!start
-//         &&(s[e.first][e.second] == s[e.first-1][e.second]-1001)
+        ||  (s[e.first][e.second] == s[e.first+1][e.second]-999)&&!start
+         &&(s[e.first][e.second] == s[e.first-1][e.second]-1001)&&dir==S
     ||  s[e.first][e.second] == s[e.first+1][e.second]+1001 )
     {
         tracks(S,false,  m, s, make_pair( e.first+1, e.second ) );
@@ -67,17 +65,17 @@ void tracks ( enum Dir dir, bool start, vector<vector<char>> & m, vector<vector<
 
 
     if ( s[e.first][e.second] == s[e.first][e.second-1]+1
-//
+
        ||  (s[e.first][e.second] == s[e.first][e.second-1]-999)&&!start 
-        &&  (s[e.first][e.second] == s[e.first][e.second+1]-1001)
+        &&  (s[e.first][e.second] == s[e.first][e.second+1]-1001)&&dir==W
     ||  s[e.first][e.second] == s[e.first][e.second-1]+1001 )
     {
         tracks(W,false, m, s, make_pair( e.first, e.second-1 ) );
         stepped = true;
     }
     if ( s[e.first][e.second] == s[e.first][e.second+1]+1
-//         ||  (s[e.first][e.second] == s[e.first][e.second+1]-999)&&!start 
-//        &&  (s[e.first][e.second] == s[e.first][e.second-1]-1001)
+         ||  (s[e.first][e.second] == s[e.first][e.second+1]-999)&&!start 
+        &&  (s[e.first][e.second] == s[e.first][e.second-1]-1001)&&dir==E
      ||  s[e.first][e.second] == s[e.first][e.second+1]+1001 )
     {
         tracks(E,false, m, s, make_pair( e.first, e.second+1 ) );
@@ -90,13 +88,14 @@ void tracks ( enum Dir dir, bool start, vector<vector<char>> & m, vector<vector<
 
         // only 124,9
         m[e.first+1][e.second] = 'O';
+        
         tracks(dir, false,  m, s, make_pair( e.first+2, e.second ) );
     }
 }
 
 long long step( vector<vector<char>> & m, vector<vector<long long>> & s, long long v, enum Dir d, int r, int c )
 {
-    if ( s[r][c] != -1 && s[r][c]<v) 
+    if ( s[r][c] != -1 && s[r][c]<=v) 
         return -2;
     else
     {
@@ -121,7 +120,6 @@ long long step( vector<vector<char>> & m, vector<vector<long long>> & s, long lo
     if ( m[r][c+1]!='#' && d != W )
       dirs[E]=0;
     if ( m[r][c-1]!='#' && d != E )
-
       dirs[W]=0;
 
     // calc the steps
@@ -130,11 +128,11 @@ long long step( vector<vector<char>> & m, vector<vector<long long>> & s, long lo
         int dr{0},dc{0};
         if (it->first == N )
             dr=-1;
-        if (it->first == S )
+        else if (it->first == S )
             dr=1;
-        if (it->first == E )
+        else if (it->first == E )
             dc=1;
-        if (it->first == W )
+        else if (it->first == W )
             dc=-1;
 
         if(  it->first == d )
@@ -192,33 +190,38 @@ int main()
 
     tracks(S,true,maze,score,e);
 
+
     for ( auto row: maze )
     {
         for ( auto col: row )
         {
             if ( col == 'O' )
                 answer2++;
-            cout << col;
+            //cout << col;
         }
+        //
         cout << endl;
     }
-
+/*
     int rc {0}, cc {0};
+
     for ( auto row: score )
     {
         for ( auto col: row )
         {
-            if ((rc>6-7)&&(rc<6+7)&&(cc>68-9)&&(cc<68+9))    
+            if ((rc>=0)&&(rc<17)&&(cc>=24)&&(cc<=38))
                 cout << std::setw(6) << col;
             cc++;
         }
-        if ((rc>6-7)&&(rc<6+7))
+        if ((rc>=0)&&(rc<17))
 
             cout << endl;
         rc++; cc=0;
     }
+    */
     cout << "answer1 = " << answer1 << endl;
     cout << "answer2 = " << answer2 << endl;
  
+
     return 0;
 }
